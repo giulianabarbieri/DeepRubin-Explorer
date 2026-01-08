@@ -10,6 +10,14 @@ This repository implements a Machine Learning pipeline designed for the **Vera C
 
 Inspired by recent research in multiscale astrobiology (e.g., Ćiprijanović et al.), this project explores how high-cadence photometry can be used to identify anomalous signals that may warrant follow-up observations.
 
+## 📡 Scientific Motivation
+How do we find life in a haystack of 10 million alerts per night? The **Vera C. Rubin Observatory (LSST)** will revolutionize our understanding of the dynamic universe, but its true power for astrobiology lies in **Anomaly Detection**. 
+
+This project implements a high-performance Machine Learning pipeline to classify known astronomical transients (Supernovae, Variable Stars, AGNs). By mastering the "Expected Universe," we enable the identification of the **"Unexpected"**:
+1. **Technosignature Candidates:** Signals that deviate from known physical models.
+2. **Galactic Habitability:** Mapping high-energy events (SNe) that influence the chemical enrichment and sterilization risks of planetary systems.
+3. **Interstellar Objects:** Identifying non-periodic transients that could be interstellar scouts or anomalous bolides.
+
 ## 🧠 ML Engineering Challenges
 Transitioning from industrial ML to Astrophysics requires addressing domain-specific constraints:
 * **Irregular Sampling:** Handling non-equidistant time series (cadence-dependent data).
@@ -33,4 +41,7 @@ Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the
 - [ ] Uncertainty estimation using Bayesian Neural Networks.
 
 ---
-**Author:** Giuliana Barbieri — *ML Engineer exploring the intersection of Big Data and Extragalactic Astrophysics.* 🤩
+**Author:** Giuliana Barbieri — *ML Engineer exploring the intersection of Big Data and Extragalactic Astrophysics.* 
+
+
+
