@@ -41,6 +41,16 @@ Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the
 - [ ] Uncertainty estimation using Bayesian Neural Networks.
 
 ---
+
+## 📈 Data Visualization
+
+The project currently explores real-time astronomical transients. Below is an example of a **Type Ia Supernova (SNIa)** light curve (Object: **ZTF18adoojej**) retrieved from the ALeRCE broker. 
+
+![Light Curve Sample](assets/light_curve_sample.png)
+
+> **Scientific Note:** Notice the irregular gaps between observations and the characteristic brightness decay. These gaps represent the "missing data challenge" that we aim to solve using Gaussian Processes, as suggested by modern astrophysical deep learning research.
+
+---
 **Author:** Giuliana Barbieri — *ML Engineer exploring the intersection of Big Data and Extragalactic Astrophysics.* 
 
 
