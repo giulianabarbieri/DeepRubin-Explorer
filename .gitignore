@@ -1,0 +1,12 @@
+# Virtual enviroment
+venv/
+.env
+
+# Data 
+data/
+*.csv
+*.fits
+
+# Python cache
+__pycache__/
+.ipynb_checkpoints/
