@@ -30,9 +30,6 @@ class DataIngestor:
                 format="pandas"
             )
             
-            # DEBUG: Let's see what the API actually returned
-            # print(f"DEBUG: Columns received: {targets.columns.tolist()}")
-
             # ALeRCE sometimes uses 'oid' (Object ID) or 'aid' (ALeRCE ID)
             # We ensure we have a column named 'oid' for the rest of the script
             if 'oid' not in targets.columns:
