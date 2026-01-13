@@ -42,7 +42,41 @@ Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the
 
 ---
 
-## 📈 Data Visualization
+## � Seguimiento de Experimentos con MLflow
+
+### ¿Qué es MLflow?
+Este proyecto utiliza **MLflow** como sistema de tracking de experimentos. MLflow registra automáticamente cada ejecución de entrenamiento, incluyendo:
+- **Hiperparámetros:** Learning rate, batch size, número de épocas, arquitectura del modelo.
+- **Métricas de rendimiento:** Accuracy y Loss (entrenamiento y validación) registradas por época.
+- **Artefactos:** Versiones guardadas de los modelos entrenados (.pth) y datasets utilizados.
+- **Metadata del dataset:** Rutas de archivos, número de muestras, distribución de clases.
+
+Esta funcionalidad permite comparar diferentes configuraciones, reproducir experimentos y auditar qué versión de datos generó cada modelo.
+
+### Cómo lanzar la interfaz de MLflow
+Después de ejecutar el script de entrenamiento (`src/train.py`), lanza la interfaz web de MLflow desde la raíz del proyecto:
+
+```bash
+mlflow ui
+```
+
+### Cómo visualizar los experimentos
+Abre tu navegador y accede a:
+
+```
+http://127.0.0.1:5000
+```
+
+### Qué encontrarás en la interfaz
+- **Runs:** Lista de todas las ejecuciones de entrenamiento con sus parámetros e IDs únicos.
+- **Comparación de experimentos:** Visualización side-by-side de métricas (Loss/Accuracy) entre diferentes corridas.
+- **Gráficos de evolución:** Trazado automático de la curva de aprendizaje (train_loss, val_loss, val_acc vs. epoch).
+- **Artifacts:** Descarga directa del modelo entrenado (.pth) y del modelo completo serializado con PyTorch.
+- **Data:** Información del dataset utilizado en cada run, incluyendo rutas y estadísticas.
+
+---
+
+## �📈 Data Visualization
 
 The project currently explores real-time astronomical transients. Below is an example of a **Type Ia Supernova (SNIa)** light curve (Object: **ZTF18adoojej**) retrieved from the ALeRCE broker. 
 
