@@ -89,12 +89,12 @@ class DataIngestor:
 
 if __name__ == "__main__":
     ingestor = DataIngestor()
-    # Queremos un dataset balanceado para que la IA aprenda bien
+    # We want a balanced dataset for proper AI training
     classes_to_download = ["SNIa", "SNII", "QSO", "CEP"]
-    # SNIa: Supernovas Termonucleares
-    # SNII: Supernovas de Colapso de Núcleo
-    # QSO: Cuásares (para que la IA aprenda a diferenciar)
-    # CEP: Cefeidas (Estrellas variables periódicas)
+    # SNIa: Thermonuclear Supernovae
+    # SNII: Core-Collapse Supernovae
+    # QSO: Quasars (to help AI learn to differentiate)
+    # CEP: Cepheids (Periodic variable stars)
 
     samples_per_class = 100
     
@@ -107,7 +107,7 @@ if __name__ == "__main__":
             for oid in tqdm(targets['oid'], desc=f"Progreso {cls}", unit="obj"):
                 success = ingestor.download_and_save(oid, class_name=cls)
                 
-                # Opcional: si querés un log sin romper la barra
+                # Optional: log without breaking the progress bar
                 if success:
                     tqdm.write(f"[+] Finalizado: {oid}") 
         else:

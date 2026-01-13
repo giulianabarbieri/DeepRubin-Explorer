@@ -8,7 +8,7 @@ class LightCurveDataset(Dataset):
         self.X = np.load(x_path)  # Shape: (N, n_times, n_channels)
         self.y = pd.read_csv(y_path).values.squeeze()
         
-        # Convertir etiquetas de texto a índices numéricos
+        # Convert text labels to numeric indices
         if self.y.dtype.kind in ['U', 'S', 'O']:  # Unicode, bytes, or object (string)
             unique_classes = sorted(np.unique(self.y))
             self.class_to_idx = {c: i for i, c in enumerate(unique_classes)}
@@ -23,8 +23,8 @@ class LightCurveDataset(Dataset):
         return len(self.X)
     
     def __getitem__(self, idx):
-        # Obtener el ejemplo: shape (n_times, n_channels)
+        # Get example: shape (n_times, n_channels)
         x = self.X[idx]
-        # Transponer a (n_channels, n_times) para Conv1d
+        # Transpose to (n_channels, n_times) for Conv1d
         x = x.T  # Shape: (n_channels, n_times)
         return torch.tensor(x, dtype=torch.float32), torch.tensor(self.y[idx], dtype=torch.long)
