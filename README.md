@@ -35,48 +35,51 @@ The project is structured following clean code principles for scientific reprodu
 Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the **ALeRCE Client**, serving as a high-fidelity precursor to the upcoming LSST data release.
 
 ## 📈 Roadmap
-- [x] Data ingestion pipeline via ALeRCE API.
-- [ ] Exploratory Data Analysis of SN Ia vs. SN II light curves.
-- [ ] Implementation of a Deep Learning classifier (Temporal Convolutional Networks).
-- [ ] Uncertainty estimation using Bayesian Neural Networks.
+
+- [x] **Data Ingestion:** Automated pipeline via ALeRCE API.
+- [x] **Preprocessing:** Data cleaning and augmentation using Gaussian Processes (GP).
+- [x] **Model Implementation:** Temporal Convolutional Network (TCN) with Dilated Convolutions for long-range temporal dependencies.
+- [x] **Experiment Tracking:** MLflow integration for reproducibility and hyperparameter logging.
+- [ ] **Exploratory Data Analysis (EDA):** Visual comparison of light curve classes and feature distributions.
+- [ ] **Model Evaluation:** Performance report including Confusion Matrix and detailed classification metrics.
 
 ---
 
-## � Seguimiento de Experimentos con MLflow
+## Experiment Tracking with MLflow
 
-### ¿Qué es MLflow?
-Este proyecto utiliza **MLflow** como sistema de tracking de experimentos. MLflow registra automáticamente cada ejecución de entrenamiento, incluyendo:
-- **Hiperparámetros:** Learning rate, batch size, número de épocas, arquitectura del modelo.
-- **Métricas de rendimiento:** Accuracy y Loss (entrenamiento y validación) registradas por época.
-- **Artefactos:** Versiones guardadas de los modelos entrenados (.pth) y datasets utilizados.
-- **Metadata del dataset:** Rutas de archivos, número de muestras, distribución de clases.
+### What is MLflow?
+This project uses **MLflow** as an experiment tracking system. MLflow automatically logs each training run, including:
+- **Hyperparameters:** Learning rate, batch size, number of epochs, model architecture.
+- **Performance Metrics:** Accuracy and Loss (training and validation) logged per epoch.
+- **Artifacts:** Saved versions of trained models (.pth) and used datasets.
+- **Dataset Metadata:** File paths, number of samples, class distribution.
 
-Esta funcionalidad permite comparar diferentes configuraciones, reproducir experimentos y auditar qué versión de datos generó cada modelo.
+This functionality allows comparing different configurations, reproducing experiments, and auditing which data version generated each model.
 
-### Cómo lanzar la interfaz de MLflow
-Después de ejecutar el script de entrenamiento (`src/train.py`), lanza la interfaz web de MLflow desde la raíz del proyecto:
+### How to Launch the MLflow Interface
+After running the training script (`src/train.py`), launch the MLflow web interface from the project root:
 
 ```bash
 mlflow ui
 ```
 
-### Cómo visualizar los experimentos
-Abre tu navegador y accede a:
+### How to Visualize Experiments
+Open your browser and navigate to:
 
 ```
 http://127.0.0.1:5000
 ```
 
-### Qué encontrarás en la interfaz
-- **Runs:** Lista de todas las ejecuciones de entrenamiento con sus parámetros e IDs únicos.
-- **Comparación de experimentos:** Visualización side-by-side de métricas (Loss/Accuracy) entre diferentes corridas.
-- **Gráficos de evolución:** Trazado automático de la curva de aprendizaje (train_loss, val_loss, val_acc vs. epoch).
-- **Artifacts:** Descarga directa del modelo entrenado (.pth) y del modelo completo serializado con PyTorch.
-- **Data:** Información del dataset utilizado en cada run, incluyendo rutas y estadísticas.
+### What You Will Find in the Interface
+- **Runs:** List of all training executions with their parameters and unique IDs.
+- **Experiment Comparison:** Side-by-side visualization of metrics (Loss/Accuracy) between different runs.
+- **Evolution Plots:** Automatic plotting of learning curves (train_loss, val_loss, val_acc vs. epoch).
+- **Artifacts:** Direct download of the trained model (.pth) and the full serialized PyTorch model.
+- **Data:** Information about the dataset used in each run, including paths and statistics.
 
 ---
 
-## �📈 Data Visualization
+## 📈 Data Visualization
 
 The project currently explores real-time astronomical transients. Below is an example of a **Type Ia Supernova (SNIa)** light curve (Object: **ZTF18adoojej**) retrieved from the ALeRCE broker. 
 

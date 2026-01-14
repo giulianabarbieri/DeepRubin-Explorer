@@ -8,7 +8,7 @@ import mlflow
 import mlflow.pytorch
 
 from dataset import LightCurveDataset
-from model import LightCurveCNN1D
+from model import LightCurveTCN
 
 
 def train_epoch(model, loader, criterion, optimizer, device):
@@ -67,8 +67,9 @@ def main():
     data_dir = Path("data/processed")
     x_path = data_dir / "X_lightcurves.npy"
     y_path = data_dir / "y_labels.csv"
-    model_save_path = Path("../models/rubin_cnn_model.pth")
-    
+    # Get the directory where this script is located
+    script_dir = Path(__file__).parent
+    model_save_path = script_dir.parent / "models" / "rubin_tcn_model.pth"    
     # Hyperparameters
     batch_size = 16
     learning_rate = 0.001
@@ -107,7 +108,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     
     # Initialize model
-    model = LightCurveCNN1D(n_channels=2, n_times=100, n_classes=n_classes)
+    model = LightCurveTCN(n_channels=2, n_times=100, n_classes=n_classes)
     model = model.to(device)
     print(f"Model initialized: {model.__class__.__name__}")
     
@@ -117,6 +118,9 @@ def main():
     
     # Start MLflow run
     with mlflow.start_run():
+        # Log model type
+        mlflow.set_tag("model_type", "TCN")
+
         # Log hyperparameters
         mlflow.log_param("learning_rate", learning_rate)
         mlflow.log_param("batch_size", batch_size)
@@ -124,7 +128,7 @@ def main():
         mlflow.log_param("train_split", train_split)
         mlflow.log_param("optimizer", "Adam")
         mlflow.log_param("loss_function", "CrossEntropyLoss")
-        mlflow.log_param("model_architecture", "LightCurveCNN1D")
+        mlflow.log_param("model_architecture", "LightCurveTCN")
         mlflow.log_param("device", str(device))
         mlflow.log_param("n_channels", 2)
         mlflow.log_param("n_times", 100)
@@ -187,7 +191,7 @@ def main():
         torch.save(model.state_dict(), model_save_path)
         
         # Log model as artifact
-        mlflow.log_artifact(str(model_save_path), artifact_path="model")
+        mlflow.log_artifact(str(model_save_path), name="model")
         
         # Log model using MLflow's pytorch autologging (optional)
         mlflow.pytorch.log_model(model, "pytorch_model")
