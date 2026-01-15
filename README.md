@@ -2,7 +2,7 @@
 ### Real-time Transient Classification & Astrobiological Target Selection
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.8-3.12](https://img.shields.io/badge/python-3.8--3.12-blue.svg)](https://www.python.org/downloads/)
 [![Data: ALeRCE Broker](https://img.shields.io/badge/Data-ALeRCE%20Broker-orange)](https://alerce.online/)
 
 ## 🔭 Overview
@@ -24,17 +24,18 @@ Transitioning from industrial ML to Astrophysics requires addressing domain-spec
 * **Heteroscedastic Noise:** Integrating measurement uncertainties ($\sigma$) directly into the loss function.
 * **Domain Shift:** Training on synthetic data (ELAsTiCC) and deploying on real survey streams (ZTF/Rubin).
 
-## 🛠️ Architecture
+##  Architecture
 The project is structured following clean code principles for scientific reproducibility:
-* `ingestion/`: API wrappers for ALeRCE and ZTF alert streams.
-* `preprocessing/`: Gaussian Process (GP) interpolation and feature extraction.
-* `models/`: PyTorch implementations of Time-Series Transformers and RNNs.
-* `notebooks/`: Exploratory Data Analysis (EDA) and astrophysical validation.
+* `src/ingestion.py`: API wrappers for ALeRCE and ZTF alert streams.
+* `notebooks/`: Gaussian Process (GP) interpolation and exploratory data analysis.
+* `src/model.py`: PyTorch implementation of Temporal Convolutional Network (TCN).
+* `src/train.py`: Training pipeline with MLflow experiment tracking.
+* `src/evaluate.py`: Model evaluation with confusion matrix and metrics visualization.
 
-## 📊 Data Source
+##  Data Source
 Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the **ALeRCE Client**, serving as a high-fidelity precursor to the upcoming LSST data release.
 
-## 📈 Roadmap
+##  Roadmap
 
 - [x] **Data Ingestion:** Automated pipeline via ALeRCE API.
 - [x] **Preprocessing:** Data cleaning and augmentation using Gaussian Processes (GP).
@@ -110,47 +111,47 @@ python src/evaluate.py --save-plots --output-dir results/experiment_01
 ```
 
 ### 7. View Experiment Results
-Launch the MLflow UI to compare runs:
+Monitor your training and compare experiments using MLflow:
 
 ```bash
 mlflow ui
 ```
 
-Navigate to `http://127.0.0.1:5000` in your browser.
+For detailed instructions on visualizing and interpreting results, see the [Experiment Tracking with MLflow](#experiment-tracking-with-mlflow) section below.
 
 ---
 
 ## Experiment Tracking with MLflow
 
-### What is MLflow?
-This project uses **MLflow** as an experiment tracking system. MLflow automatically logs each training run, including:
-- **Hyperparameters:** Learning rate, batch size, number of epochs, model architecture.
-- **Performance Metrics:** Accuracy and Loss (training and validation) logged per epoch.
-- **Artifacts:** Saved versions of trained models (.pth) and used datasets.
-- **Dataset Metadata:** File paths, number of samples, class distribution.
+### Why MLflow?
+This project uses **MLflow** as an experiment tracking system to ensure reproducibility and facilitate model comparison. Every training run is automatically logged with:
 
-This functionality allows comparing different configurations, reproducing experiments, and auditing which data version generated each model.
+- **Hyperparameters:** Learning rate, batch size, number of epochs, model architecture, optimizer configuration.
+- **Performance Metrics:** Accuracy and Loss (training and validation) tracked at each epoch for convergence analysis.
+- **Artifacts:** Serialized models (.pth files), confusion matrices, and evaluation visualizations.
+- **Dataset Metadata:** Input file paths, total samples, class distribution, and data versioning.
 
-### How to Launch the MLflow Interface
-After running the training script (`src/train.py`), launch the MLflow web interface from the project root:
+This systematic tracking enables:
+- **Reproducibility:** Recreate any experiment using the logged parameters and data version.
+- **Comparison:** Analyze multiple runs side-by-side to identify optimal configurations.
+- **Auditability:** Track which data and hyperparameters produced each model version.
 
-```bash
-mlflow ui
-```
+### Accessing the MLflow Dashboard
+After running `mlflow ui` from the project root, access the interactive dashboard at `http://127.0.0.1:5000` in your web browser.
 
-### How to Visualize Experiments
-Open your browser and navigate to:
+### Dashboard Features
 
-```
-http://127.0.0.1:5000
-```
+- **Experiment List:** View all runs with their status, parameters, and key metrics at a glance.
+- **Run Comparison:** Select multiple runs to compare metrics, parameters, and artifacts side-by-side.
+- **Metric Plots:** Visualize learning curves (train_loss, val_loss, val_acc) to detect overfitting or convergence issues.
+- **Model Registry:** Download trained model weights (.pth) or the complete serialized PyTorch model.
+- **Data Tracking:** Inspect dataset information, including source paths and statistics, to ensure data provenance.
 
-### What You Will Find in the Interface
-- **Runs:** List of all training executions with their parameters and unique IDs.
-- **Experiment Comparison:** Side-by-side visualization of metrics (Loss/Accuracy) between different runs.
-- **Evolution Plots:** Automatic plotting of learning curves (train_loss, val_loss, val_acc vs. epoch).
-- **Artifacts:** Direct download of the trained model (.pth) and the full serialized PyTorch model.
-- **Data:** Information about the dataset used in each run, including paths and statistics.
+### Best Practices
+
+1. **Systematic Naming:** Use meaningful run names (e.g., `tcn_baseline_balanced_data`) to facilitate quick identification.
+2. **Tag Experiments:** Group related runs by experiment type (e.g., architecture variations, hyperparameter sweeps).
+3. **Archive Results:** Periodically export promising runs for long-term reference or publication.
 
 ---
 
@@ -188,7 +189,7 @@ Looking at a specific prediction for a Type Ia Supernova:
 
 ---
 
-## �📈 Data Visualization
+## 📊 Data Visualization
 
 The project currently explores real-time astronomical transients. Below is an example of a **Type Ia Supernova (SNIa)** light curve (Object: **ZTF18adoojej**) retrieved from the ALeRCE broker. 
 
@@ -198,7 +199,18 @@ The project currently explores real-time astronomical transients. Below is an ex
 
 ---
 
-## 🎓 Conclusion
+## Future Work
+
+- **Uncertainty Quantification:** Implement Bayesian Neural Networks or Monte Carlo Dropout for probabilistic predictions.
+- **Real-time Streaming Pipeline:** Integrate with live ALeRCE alert streams for real-time classification.
+- **Cross-Survey Domain Adaptation:** Train on ZTF and adapt to Rubin Observatory data with transfer learning.
+- **Larger Balanced Dataset:** Address class imbalance by augmenting supernova samples and exploring oversampling techniques.
+- **Attention Mechanisms:** Incorporate Transformer layers to learn which temporal features are most discriminative for each class.
+- **Anomaly Detection Layer:** Build an outlier detection module to flag potential technosignatures or novel transient types.
+
+---
+
+## Conclusion
 
 This project successfully demonstrates the implementation of a Temporal Convolutional Network for the classification of Rubin-LSST-like light curves. By leveraging Gaussian Processes for data augmentation and MLflow for experiment tracking, we established a robust pipeline for time-domain astronomy.
 
