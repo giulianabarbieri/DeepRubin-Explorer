@@ -26,7 +26,7 @@ Transitioning from industrial ML to Astrophysics requires addressing domain-spec
 
 ##  Architecture
 The project is structured following clean code principles for scientific reproducibility:
-* `src/ingestion.py`: API wrappers for ALeRCE and ZTF alert streams.
+* `src/ingestion.py`: API wrappers for ALeRCE.
 * `notebooks/`: Gaussian Process (GP) interpolation and exploratory data analysis.
 * `src/model.py`: PyTorch implementation of Temporal Convolutional Network (TCN).
 * `src/train.py`: Training pipeline with MLflow experiment tracking.
@@ -195,7 +195,7 @@ The project currently explores real-time astronomical transients. Below is an ex
 
 ![Light Curve Sample](assets/light_curve_sample.png)
 
-> **Scientific Note:** Notice the irregular gaps between observations and the characteristic brightness decay. These gaps represent the "missing data challenge" that we aim to solve using Gaussian Processes, as suggested by modern astrophysical deep learning research.
+> **Note:** Notice the irregular gaps between observations and the characteristic brightness decay. These gaps represent the "missing data challenge" that we aim to solve using Gaussian Processes, as suggested by modern astrophysical deep learning research.
 
 ---
 
