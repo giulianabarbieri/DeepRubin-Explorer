@@ -42,7 +42,7 @@ Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the
 - [x] **Model Implementation:** Temporal Convolutional Network (TCN) with Dilated Convolutions for long-range temporal dependencies.
 - [x] **Experiment Tracking:** MLflow integration for reproducibility and hyperparameter logging.
 - [x] **Model Evaluation:** Performance report including Confusion Matrix and detailed classification metrics.
-- [ ] **Exploratory Data Analysis (EDA):** Visual comparison of light curve classes and feature distributions.
+- [x] **Exploratory Data Analysis (EDA):** Visual comparison of light curve classes and feature distributions.
 
 
 ---
@@ -87,7 +87,21 @@ python src/build_tensor.py
 
 This generates `X_lightcurves.npy` and `y_labels.csv` in `data/processed/`.
 
-### 5. Train the Model
+### 5. Exploratory Data Analysis (EDA)
+Perform comprehensive analysis of the processed light curve data:
+
+```bash
+python src/eda.py --data-path data --output-dir assets
+```
+
+This script generates three scientific visualizations:
+- **Class Distribution**: Bar chart showing sample balance across astronomical classes
+- **Mean Light Curves**: 2x2 panel displaying average temporal signatures for each class (g and r bands)
+- **Color Evolution**: Analysis of photometric color (g-r) changes over the 100-day observation window
+
+All plots are automatically logged to MLflow for experiment tracking and saved as high-resolution PNG files in the `assets/` directory.
+
+### 6. Train the Model
 Train the Temporal Convolutional Network:
 
 ```bash
@@ -96,7 +110,7 @@ python src/train.py
 
 Training metrics will be logged to MLflow. The model weights are saved in `models/rubin_tcn_model.pth`.
 
-### 6. Evaluate the Model
+### 7. Evaluate the Model
 Generate confusion matrix and classification report:
 
 ```bash
@@ -110,7 +124,7 @@ python src/evaluate.py --save-plots
 python src/evaluate.py --save-plots --output-dir results/experiment_01
 ```
 
-### 7. View Experiment Results
+### 8. View Experiment Results
 Monitor your training and compare experiments using MLflow:
 
 ```bash
@@ -157,6 +171,38 @@ After running `mlflow ui` from the project root, access the interactive dashboar
 
 ## Results & Discussion
 
+### Dataset Analysis and Class Distribution
+Our exploratory data analysis reveals important characteristics of the light curve dataset:
+
+<p align="center">
+  <img src="assets/eda_class_balance.png" width="500">
+</p>
+
+The dataset contains 274 high-quality light curves distributed across four astronomical classes:
+- **QSO (Quasars)**: 91 samples (33.2%) - Stochastic variability patterns
+- **CEP (Cepheids)**: 88 samples (32.1%) - Periodic variable stars  
+- **SNIa (Type Ia Supernovae)**: 66 samples (24.1%) - Thermonuclear explosions
+- **SNII (Type II Supernovae)**: 29 samples (10.6%) - Core-collapse events
+
+### Temporal Signatures and Photometric Evolution
+
+<p align="center">
+  <img src="assets/eda_mean_curves.png" width="700">
+</p>
+
+The mean light curve analysis reveals distinct temporal signatures:
+- **Cepheids** show characteristic periodic pulsations with clear g-r band differences
+- **Quasars** exhibit stochastic variability with consistent flux levels
+- **Supernovae** display explosive rise and decay patterns, with Type Ia showing more symmetric profiles
+
+### Color Evolution Analysis
+
+<p align="center">
+  <img src="assets/eda_color_evolution.png" width="600">
+</p>
+
+The color evolution (g-r) analysis demonstrates how different physical processes affect photometric signatures over time, providing crucial features for machine learning classification.
+
 ### Model Performance and Astrophysical Interpretation
 The model achieved a peak validation accuracy of 67.3%. However, the global accuracy does not tell the full story. By analyzing the Confusion Matrix, we can see how the architecture interprets different physical processes.
 
@@ -172,7 +218,7 @@ The model achieved a peak validation accuracy of 67.3%. However, the global accu
 #### 2. The Challenge of Supernovae (SN Ia vs. SN II)
 The confusion matrix reveals a significant struggle in distinguishing between Supernova types:
 
-**Class Imbalance:** Our dataset contains fewer SNe samples compared to QSOs.
+**Class Imbalance:** Our dataset contains fewer SNII samples (29) compared to other classes, creating an imbalanced learning scenario.
 
 **Morphological Similarity:** At early stages, the light curve rise for SN Ia and SN II can look nearly identical. Without a larger training set, the model tends to "default" to the more populated classes or confuse SN types with each other.
 
