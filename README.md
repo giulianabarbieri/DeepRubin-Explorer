@@ -22,7 +22,7 @@ This project implements a high-performance Machine Learning pipeline to classify
 Transitioning from industrial ML to Astrophysics requires addressing domain-specific constraints:
 * **Irregular Sampling:** Handling non-equidistant time series (cadence-dependent data).
 * **Heteroscedastic Noise:** Integrating measurement uncertainties ($\sigma$) directly into the loss function.
-* **Domain Shift:** Training on synthetic data (ELAsTiCC) and deploying on real survey streams (ZTF/Rubin).
+* **Class Imbalance:** Addressing unequal sample sizes across astronomical transient types (29 SNII vs 91 QSO).
 
 ##  Architecture
 The project is structured following clean code principles for scientific reproducibility:
