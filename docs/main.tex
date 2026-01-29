@@ -1,0 +1,55 @@
+\documentclass[twocolumn, 10pt]{article} % Formato de dos columnas
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm]{geometry} % Márgenes más limpios
+\usepackage{graphicx}
+\usepackage{authblk} % Para manejar mejor las afiliaciones
+\usepackage{amsmath} % Para fórmulas matemáticas
+\usepackage{hyperref} % Para que los links funcionen
+\usepackage{booktabs} % Para tablas elegantes
+
+\title{\textbf{DeepRubin-Explorer: Real-time Transient Classification via Temporal Convolutional Networks for the LSST Era}}
+
+\author[1]{Giuliana Barbieri}
+\affil[1]{Independent Researcher / ML Engineer}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+As we enter the era of the Vera C. Rubin Observatory’s Legacy Survey of Space and Time (LSST), the astronomical community faces the unprecedented challenge of classifying approximately 10 million alerts per night. While current brokers provide classifications based on established models, there is a critical need for independent, high-speed, and deep-learning-based architectures capable of early-stage classification. This work presents a complete pipeline, from data ingestion via the ALeRCE broker to classification using a Temporal Convolutional Network (TCN) with dilated convolutions. We evaluate the model's performance on four classes of transients (QSO, CEP, SNIa, and SNII), utilizing Gaussian Processes for light curve interpolation and noise handling. Preliminary results show high precision in identifying stochastic and periodic sources, while revealing significant challenges in supernova sub-type discrimination due to morphological similarities in the first 100 days. This pipeline serves as a modular testbed for exploring end-to-end deep learning strategies that bypass manual feature engineering, offering a scalable alternative for real-time alert streams.
+\end{abstract}
+
+\section{Introduction}
+The Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST) represents a paradigm shift in time-domain astronomy. With an unprecedented data stream, traditional manual feature engineering becomes a bottleneck. In this context, deep learning architectures that can directly process raw photometric time series are essential...
+
+\section{Exploratory Data Analysis}
+Before training, we analyzed the dataset characteristics to identify potential classification challenges.
+
+\subsection{Class Distribution}
+Our dataset, retrieved via the ALeRCE API, exhibits a significant class imbalance, which is representative of real-world survey conditions (see Figure \ref{fig:balance}). 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../assets/eda_class_balance.png}
+    \caption{Distribution of astronomical samples across the four selected classes.}
+    \label{fig:balance}
+\end{figure}
+\subsection{Data Selection and Class Imbalance}
+The dataset was constructed by querying the ALeRCE API for objects with a classification probability $P > 0.70$. The resulting imbalance (91 QSOs vs. 29 SNII) reflects two main factors: 
+(1) the intrinsic volumetric rate and luminosity functions of these sources in the ZTF survey, and 
+(2) the selection bias of the broker's base classifier, which achieves higher confidence levels for stochastic and thermonuclear transients compared to core-collapse supernovae. 
+Instead of forcing a synthetic balance, we maintained this distribution to evaluate the TCN's performance under realistic, "long-tail" survey conditions.
+\subsection{Photometric Signatures}
+The morphology of the light curves (Figure \ref{fig:mean_curves}) shows that while Quasi-Stellar Objects (QSO) and Cepheids (CEP) exhibit distinct temporal signatures, Supernovae sub-types (SNIa and SNII) show high overlap in their early decay phases.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../assets/eda_mean_curves.png}
+    \caption{Mean light curve profiles for g and r bands with $1\sigma$ standard deviation shading.}
+    \label{fig:mean_curves}
+\end{figure}
+
+\end{document}
