@@ -97,9 +97,9 @@ This is the first version of the DeepRubin-Explorer. The metrics are not perfect
 
 For the next version, we need to:
 \begin{itemize}
-    \item Get more data for SNII to fix the imbalance.
-    \item Try new ways to clean the data before the TCN.
-    \item Improve the model to better distinguish between different types of Supernovae.
+    \item \textbf{Data Enrichment:} Getting more samples for the SNII class to fix the imbalance.
+    \item \textbf{Dynamic Windows:} We will explore different time windows. Instead of a fixed 100-day window, using "dynamic windows" could help us identify Supernovae faster and not confuse them with long-term objects like QSOs.
+    \item \textbf{New Architectures:} Testing if adding "Attention" mechanisms helps the TCN focus on the most important parts of the light curve.
 \end{itemize}
 
 I'm happy with this start, and I think there is a lot of room to explore and make the model better.
