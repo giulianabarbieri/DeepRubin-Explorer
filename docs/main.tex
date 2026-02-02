@@ -7,10 +7,11 @@
 \usepackage{hyperref} % Para que los links funcionen
 \usepackage{booktabs} % Para tablas elegantes
 
+% Título con un toque más técnico
 \title{\textbf{DeepRubin-Explorer: Real-time Transient Classification via Temporal Convolutional Networks for the LSST Era}}
 
-\author[1]{Giuliana Barbieri}
-\affil[1]{Independent Researcher / ML Engineer}
+\author{Giuliana Barbieri}
+\affil{ML Engineer}
 
 \date{\today}
 
@@ -23,7 +24,11 @@ As we enter the era of the Vera C. Rubin Observatory’s Legacy Survey of Space 
 \end{abstract}
 
 \section{Introduction}
-The Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST) represents a paradigm shift in time-domain astronomy. With an unprecedented data stream, traditional manual feature engineering becomes a bottleneck. In this context, deep learning architectures that can directly process raw photometric time series are essential...
+The Vera C. Rubin Observatory is fundamentally transforming our exploration of the universe. By shifting from detecting 2,000 supernovae per year to an estimated 10,000 per night, the sheer volume of data necessitates a close collaboration between astronomers and data scientists. 
+
+Processing this astronomical data stream requires robust machine learning models capable of real-time classification. The primary challenge lies in providing early alerts; we need to identify specific objects or anomalies as they occur to allow for rapid follow-up observations. This work focuses on developing specialized models that prioritize low latency and high response speed compared to general-purpose brokers like ALeRCE.
+
+In this first experiment, we implement a \textbf{Temporal Convolutional Network (TCN)}. Unlike standard architectures, TCNs are specifically designed for time-series data, utilizing \textbf{exponentially dilated convolutions} to capture long-term trends within fixed 100-day windows. This approach allows us to model brightness variations as continuous signals, potentially identifying the early stages of a supernova explosion. While this work is a "work in progress," it serves as a modular testbed for exploring more efficient and specialized deep learning strategies in the LSST era.
 
 \section{Exploratory Data Analysis}
 Before training, we analyzed the dataset characteristics to identify potential classification challenges.
@@ -37,6 +42,7 @@ Our dataset, retrieved via the ALeRCE API, exhibits a significant class imbalanc
     \caption{Distribution of astronomical samples across the four selected classes.}
     \label{fig:balance}
 \end{figure}
+
 \subsection{Data Selection and Class Imbalance}
 The dataset was constructed by querying the ALeRCE API for objects with a classification probability $P > 0.70$. The resulting imbalance (91 QSOs vs. 29 SNII) reflects two main factors: 
 (1) the intrinsic volumetric rate and luminosity functions of these sources in the ZTF survey, and 
@@ -51,5 +57,51 @@ The morphology of the light curves (Figure \ref{fig:mean_curves}) shows that whi
     \caption{Mean light curve profiles for g and r bands with $1\sigma$ standard deviation shading.}
     \label{fig:mean_curves}
 \end{figure}
+
+\section{Methodology}
+
+\subsection{Data Preprocessing and Gaussian Processes}
+Astronomical time series from ZTF are inherently irregularly sampled due to weather conditions and survey cadence. To transform these sparse observations into a continuous representation suitable for the TCN, we employed \textbf{Gaussian Process Regression (GPR)}. 
+
+We chose a Matern 3/2 kernel to model the light curves, as it provides a physically plausible balance between smoothness and the ability to capture rapid transient changes. For each object, the GPR interpolates the flux in the $g$ and $r$ bands over a fixed grid of 100 days. A key advantage of this approach is the estimation of \textbf{epistemic uncertainty}; as shown in our preliminary visualizations, the model's predictive variance increases in regions with sparse observations. This uncertainty is propagated as an additional feature or used to weight the importance of specific temporal windows.
+
+\subsection{TCN Architecture}
+The core of our classification pipeline is a \textbf{Temporal Convolutional Network (TCN)}. This architecture was selected over Recurrent Neural Networks (RNNs) due to its superior ability to handle long-range dependencies without vanishing gradient issues. 
+
+The model utilizes \textbf{dilated causal convolutions}, where the dilation factor $d$ increases exponentially with depth ($d = 2^k$). This allows the network's receptive field to cover the entire 100-day observation window using only a few layers. To ensure stability during training, we incorporated residual blocks and weight normalization. The final layer employs a Global Average Pooling operation followed by a Softmax activation to output probabilities for the four classes: QSO, CEP, SNIa, and SNII.
+
+\subsection{Training and Experiment Tracking}
+The model was trained using the \textbf{Adam optimizer} with a fixed learning rate of $10^{-3}$ (or $10^{-4}$ depending on the run), selected to ensure stable convergence of the cross-entropy loss function. Training was performed over 50 epochs with a batch size of 32.
+
+To ensure the \textbf{reproducibility} and \textbf{auditability} of our experiments, we integrated \textbf{MLflow} into the training pipeline. This allowed for systematic tracking of hyperparameters, loss curves, and validation metrics in real-time. By logging each iteration, we can compare different architectural tweaks and ensure that the results presented in this report are fully traceable, a critical requirement for scalable pipelines in the Rubin Observatory era.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{../assets/confusion_matrix.png}
+    \caption{Distribution of astronomical samples across the four selected classes.}
+    \label{fig:matrix}
+\end{figure}
+
+\section{Results}
+
+The first results of our model are a mix of success and things to improve. You can see the details in the Confusion Matrix (Figure \ref{fig:matrix}).
+
+\subsection{What worked and what didn't}
+The model was \textbf{perfect for QSOs}, with 100\% accuracy (21 of 21). This means the TCN is very good at identifying the "noisy" brightness of Quasars.
+
+On the other hand, the \textbf{SNII class} was very difficult. We only had 4 samples in the test set, which is not enough for the model to learn. Also, 10 \textbf{SNIa} samples were confused with QSOs. This happens because, in a 100-day window, a Supernova can look similar to a Quasar if we don't have enough data points.
+
+\section{Conclusions}
+This is the first version of the DeepRubin-Explorer. The metrics are not perfect yet, but they are \textbf{promising}. We proved that a TCN can classify astronomical alerts in real-time without manual work.
+
+For the next version, we need to:
+\begin{itemize}
+    \item Get more data for SNII to fix the imbalance.
+    \item Try new ways to clean the data before the TCN.
+    \item Improve the model to better distinguish between different types of Supernovae.
+\end{itemize}
+
+I'm happy with this start, and I think there is a lot of room to explore and make the model better.
 
 \end{document}

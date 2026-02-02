@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Exploratory Data Analysis (EDA) for Astronomical Light Curve Classification
 ==========================================================================
@@ -19,7 +18,6 @@ import seaborn as sns
 from pathlib import Path
 import argparse
 import mlflow
-import mlflow.artifacts
 from collections import Counter
 import warnings
 warnings.filterwarnings('ignore')
@@ -203,11 +201,12 @@ def plot_mean_light_curves(X, y, output_dir):
         
         # Customize subplot
         ax.set_title(f'{cls}: {CLASS_MAPPING.get(cls, cls)}\n(N = {len(class_data)} samples)', 
-                    fontsize=12, fontweight='bold', color=color)
-        ax.set_xlabel('Time [days]', fontsize=11)
-        ax.set_ylabel('Normalized Flux', fontsize=11)
+                    fontsize=12, fontweight='bold', color=color, pad=15)
+        ax.set_xlabel('Time [days]',fontsize=14, fontweight='medium')
+        ax.set_ylabel('Normalized Flux',fontsize=14, fontweight='medium')
+        ax.tick_params(axis='both', which='major', labelsize=12)
         ax.grid(True, alpha=0.3)
-        ax.legend(loc='best', fontsize=10)
+        ax.legend(loc='best', fontsize=12)
         
         # Set reasonable y-limits
         all_data = np.concatenate([mean_g, mean_r])
@@ -221,11 +220,15 @@ def plot_mean_light_curves(X, y, output_dir):
     
     # Overall title
     fig.suptitle('Mean Light Curve Profiles by Astronomical Class\nDeepRubin-Explorer: Temporal Signatures of Transients', 
-                fontsize=16, fontweight='bold', y=0.98)
+                fontsize=16, fontweight='bold')
     
-    plt.tight_layout()
-    plt.subplots_adjust(top=0.92)
+    # El truco está aquí: 
+    # 1. Usamos rect=[0, 0, 1, 0.95] para decirle a tight_layout que deje libre el 5% superior
+    plt.tight_layout(rect=[0, 0, 1, 0.93]) 
     
+    # OPCIONAL: Si aún lo ves cerca, puedes ajustar manualmente el espacio entre subplots
+    # plt.subplots_adjust(top=0.88, hspace=0.3) 
+
     # Save plot
     output_path = output_dir / "eda_mean_curves.png"
     plt.savefig(output_path, dpi=300, bbox_inches='tight')
