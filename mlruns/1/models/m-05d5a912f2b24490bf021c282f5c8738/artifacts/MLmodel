@@ -1,0 +1,23 @@
+artifact_path: /home/kotyonok/Documents/DeepRubin-Explorer/mlruns/1/models/m-05d5a912f2b24490bf021c282f5c8738/artifacts
+flavors:
+  python_function:
+    config:
+      device: null
+    data: data
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pytorch
+    pickle_module_name: mlflow.pytorch.pickle_module
+    python_version: 3.12.3
+  pytorch:
+    code: null
+    model_data: data
+    pytorch_version: 2.2.2+cu121
+mlflow_version: 3.8.1
+model_id: m-05d5a912f2b24490bf021c282f5c8738
+model_size_bytes: 101446
+model_uuid: m-05d5a912f2b24490bf021c282f5c8738
+prompts: null
+run_id: eca7816a9042469393aa05643e23dfc8
+utc_time_created: '2026-04-18 15:28:20.207353'

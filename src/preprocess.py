@@ -8,7 +8,7 @@ from sklearn.gaussian_process.kernels import RBF, ConstantKernel as C, WhiteKern
 
 # Load astronomical data
 
-data_dir = Path("../data")
+data_dir = Path("../data") # run from DeepRubin-Explorer/ with python src/preprocess.py
 processed_dir = data_dir / "processed"
 # Create processed directory if it does not exist
 processed_dir.mkdir(parents=True, exist_ok=True)
@@ -34,7 +34,7 @@ for file_path in file_list:
     for fid in [1,2]: # 1: g-band, 2: r-band
         filter_df = df[df["fid"] == fid].sort_values('mjd')
         # If not enough data, skip this filter
-        if len(filter_df) < 5:
+        if len(filter_df) < 8:
             continue
 
         # 1. Prepare data for this filter
@@ -48,7 +48,7 @@ for file_path in file_list:
 
         # 3. Define and Fit GP
         # Note: We use normalize_y=True as discussed
-        kernel = C(1.0) * RBF(length_scale=10.0) + WhiteKernel(noise_level=0.1)
+        kernel = C(1.0) * RBF(length_scale=10.0)
         gp = GaussianProcessRegressor(kernel=kernel, alpha=y_err**2, 
                                     normalize_y=True, n_restarts_optimizer=5)
         gp.fit(X_scaled, y)

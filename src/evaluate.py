@@ -181,6 +181,9 @@ def main():
     
     # Configuration
     script_dir = Path(__file__).parent
+    root_dir = script_dir.parent
+    mlflow.set_tracking_uri(f"sqlite:///{root_dir.absolute() / 'mlflow.db'}")
+    
     data_dir = Path("data/processed")
     x_path = data_dir / "X_lightcurves.npy"
     y_path = data_dir / "y_labels.csv"

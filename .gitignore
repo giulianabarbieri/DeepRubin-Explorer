@@ -1,5 +1,6 @@
 # Virtual enviroment
 venv/
+venv_pytorch/
 .env
 
 # Data 
@@ -10,3 +11,5 @@ data/
 # Python cache
 __pycache__/
 .ipynb_checkpoints/
+# Temporary
+scratch/

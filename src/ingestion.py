@@ -9,7 +9,7 @@ class DataIngestor:
     Facilitates the download of light curves for transient classification.
     """
     
-    def __init__(self, output_dir="../data"):
+    def __init__(self, output_dir="data"):
         self.client = Alerce()
         self.output_dir = output_dir
         self.metadata_file = os.path.join(self.output_dir, "metadata.csv")
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     # QSO: Quasars (to help AI learn to differentiate)
     # CEP: Cepheids (Periodic variable stars)
 
-    samples_per_class = 100
+    samples_per_class = 2000
     
     for cls in classes_to_download:
         targets = ingestor.fetch_sample_targets(cls, count=samples_per_class)

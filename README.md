@@ -29,8 +29,8 @@ The project is structured following clean code principles for scientific reprodu
 * `src/ingestion.py`: API wrappers for ALeRCE.
 * `notebooks/`: Gaussian Process (GP) interpolation and exploratory data analysis.
 * `src/model.py`: PyTorch implementation of Temporal Convolutional Network (TCN).
-* `src/train.py`: Training pipeline with MLflow experiment tracking.
-* `src/evaluate.py`: Model evaluation with confusion matrix and metrics visualization.
+* `src/train.py`: training pipeline with MLflow tracking and automated confusion matrix logging.
+* `src/evaluate.py`: Independent model evaluation and metrics visualization.
 
 ##  Data Source
 Currently utilizing the **Zwicky Transient Facility (ZTF)** alert stream via the **ALeRCE Client**, serving as a high-fidelity precursor to the upcoming LSST data release.
@@ -69,14 +69,18 @@ python src/ingestion.py
 This will download balanced samples of SNIa, SNII, QSO, and CEP classes into `data/`.
 
 ### 3. Preprocessing with Gaussian Processes
-Apply GP interpolation to handle irregular sampling:
+Apply GP interpolation to handle irregular sampling and ensure uniform input size for the model:
+
+```bash
+python src/preprocess.py
+```
+
+*Note: This script iterates through all raw files in `data/` and saves the interpolated curves in `data/processed/`. Alternatively, you can use the Jupyter notebook for visual exploration:*
 
 ```bash
 cd notebooks
 jupyter notebook 02_preprocessing_gp.ipynb
 ```
-
-Alternatively, run the preprocessing script if available.
 
 ### 4. Build PyTorch Dataset
 Convert preprocessed light curves into tensors:
@@ -108,7 +112,7 @@ Train the Temporal Convolutional Network:
 python src/train.py
 ```
 
-Training metrics will be logged to MLflow. The model weights are saved in `models/rubin_tcn_model.pth`.
+Training metrics and the **confusion matrix artifact** will be automatically logged to MLflow. The model weights are saved in `models/rubin_tcn_model.pth`.
 
 ### 7. Evaluate the Model
 Generate confusion matrix and classification report:
@@ -128,10 +132,10 @@ python src/evaluate.py --save-plots --output-dir results/experiment_01
 Monitor your training and compare experiments using MLflow:
 
 ```bash
-mlflow ui
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
-For detailed instructions on visualizing and interpreting results, see the [Experiment Tracking with MLflow](#experiment-tracking-with-mlflow) section below.
+This backend configuration ensures you can access all historical runs from any directory. For detailed instructions on visualizing and interpreting results, see the [Experiment Tracking with MLflow](#experiment-tracking-with-mlflow) section below.
 
 ---
 
@@ -178,11 +182,11 @@ Our exploratory data analysis reveals important characteristics of the light cur
   <img src="assets/eda_class_balance.png" width="500">
 </p>
 
-The dataset contains 274 high-quality light curves distributed across four astronomical classes:
-- **QSO (Quasars)**: 91 samples (33.2%) - Stochastic variability patterns
-- **CEP (Cepheids)**: 88 samples (32.1%) - Periodic variable stars  
-- **SNIa (Type Ia Supernovae)**: 66 samples (24.1%) - Thermonuclear explosions
-- **SNII (Type II Supernovae)**: 29 samples (10.6%) - Core-collapse events
+The dataset contains **764 high-quality light curves** distributed across four astronomical classes:
+- **QSO (Quasars)**: 400 samples (52.4%) - Stochastic variability patterns
+- **CEP (Cepheids)**: 252 samples (33.0%) - Periodic variable stars  
+- **SNIa (Type Ia Supernovae)**: 77 samples (10.1%) - Thermonuclear explosions
+- **SNII (Type II Supernovae)**: 35 samples (4.6%) - Core-collapse events
 
 ### Temporal Signatures and Photometric Evolution
 
@@ -203,24 +207,29 @@ The mean light curve analysis reveals distinct temporal signatures:
 
 The color evolution (g-r) analysis demonstrates how different physical processes affect photometric signatures over time, providing crucial features for machine learning classification.
 
-### Model Performance and Astrophysical Interpretation
-The model achieved a peak validation accuracy of 67.3%. However, the global accuracy does not tell the full story. By analyzing the Confusion Matrix, we can see how the architecture interprets different physical processes.
+### 🏆 The Evolution of the Model: A Success Story
 
-<p align="center">
-  <img src="assets/confusion_matrix.png" width="500">
-</p>
+Transitioning from industrial ML to extreme astronomical environments required iterative refinement. Here is how we moved from a baseline to a high-performance scientific tool:
 
-#### 1. Stochastic vs. Periodic Signals
-**QSOs (Quasars):** The model achieved 100% precision. This is expected as the TCN (Temporal Convolutional Network) is excellent at identifying the stochastic variability (damped random walk patterns) typical of AGN, which differs significantly from the explosive nature of transients.
+#### Phase 1: The Baseline (67.3% Accuracy)
+Our initial approach used a **Standard Temporal Convolutional Network (TCN)** with a traditional CrossEntropy loss function on a limited dataset of **274 samples**.
+*   **The Problem:** Low data volume combined with severe class imbalance (e.g., only 29 SNII samples) made it difficult for the model to learn rare events. The model "played it safe" by over-predicting the most frequent classes.
+*   **The Artifacts:** While MLflow was already implemented for basic metric tracking, the evaluation loop still required manual script execution to visualize results.
 
-**CEPs (Cepheids):** High performance due to their periodic morphology. The dilated convolutions in the TCN successfully captured the repeating pulse shape.
+#### Phase 2: Data Expansion & Cost-Sensitive Learning (92.16% Accuracy)
+In our current version, we realized that both architecture and data volume needed to scale. We expanded the dataset to **764 samples** and introduced **Weighted CrossEntropyLoss**.
+*   **The Solution:** By assigning higher weights to rare classes during the loss calculation and providing 3x more training examples, we forced the TCN to extract more robust temporal features.
+*   **The Result:** A dramatic leap to **92.16% Peak Validation Accuracy**, with significantly improved precision across all categories.
+*   **The Maturity:** We integrated **Automated Confusion Matrix Logging** into the training loop for instant scientific feedback.
 
-#### 2. The Challenge of Supernovae (SN Ia vs. SN II)
-The confusion matrix reveals a significant struggle in distinguishing between Supernova types:
+| Version | Accuracy | Samples | Key Innovation | Logging |
+| :--- | :--- | :--- | :--- | :--- |
+| v1.0 (Baseline) | 67.3% | 274 | Standard TCN | MLflow (Basic) |
+| **v2.0 (Current)** | **92.16%** | **764** | **Weighted Cost + Data Expansion** | **MLflow (Auto-Artifacts)** |
 
-**Class Imbalance:** Our dataset contains fewer SNII samples (29) compared to other classes, creating an imbalanced learning scenario.
+### 📊 Model Interpretation and Astrophysical Insights
 
-**Morphological Similarity:** At early stages, the light curve rise for SN Ia and SN II can look nearly identical. Without a larger training set, the model tends to "default" to the more populated classes or confuse SN types with each other.
+By analyzing the automated Confusion Matrix in MLflow, we can see how the architecture interprets different physical processes.
 
 ### Individual Inference Analysis
 Looking at a specific prediction for a Type Ia Supernova:
