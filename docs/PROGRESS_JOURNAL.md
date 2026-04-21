@@ -27,8 +27,26 @@ The goal of this project is to classify astronomical transients (Supernovae, Qua
 - **Result**: The Peak Validation Accuracy jumped to **92.16%**.
 - **Learning**: Combining more training examples with a cost-sensitive loss function is extremely effective for astronomical classification. The model became much better at distinguishing between Supernova types.
 
+#### Benchmarking the v2.0 Model
+To understand if this model is ready for the LSST alert stream, we also measured the real-world latency and throughput of the full pipeline using `src/benchmark.py`.
+
+- **Hardware**: CPU-only (no GPU).
+- **Method**: Warm-up phase of 3 runs (not measured) to avoid cold-start bias. Each stage measured independently with `time.perf_counter`.
+
+| Stage | Mean Latency | P95 Latency |
+| :--- | ---: | ---: |
+| GP Preprocessing | 55.3 ms | 65.1 ms |
+| Tensor Conversion | 0.05 ms | — |
+| TCN Inference | 9.1 ms | 51.3 ms |
+| **Total (end-to-end)** | **64.5 ms** | — |
+
+- **Throughput**: ~15.5 alerts/second → ~55,855 alerts/hour (single CPU node).
+- **Scalability**: Processing 10M alerts on 1 node takes ~179 hours. Real-time classification (<8h) would require ~23 parallel nodes.
+- **Key Learning**: The bottleneck is the **Gaussian Process preprocessing** (~55ms), not the TCN model itself (~9ms). If we want to scale, the first step is to parallelize or replace the GP step, not the model architecture.
+
 ---
 
-## 📈 Future Hypotheses
-1. **Dynamic Windows**: 100 days might be too long for some transients. Reducing the window might help identify SNe earlier.
-2. **Additional Features**: Including the $g-r$ color evolution as a separate channel might improve the classification of SNIa vs SNII.
+## Future Hypotheses
+1. **GP Acceleration**: Replacing sklearn GP with a sparse GP (e.g., GPyTorch) or parallelizing across CPU cores could reduce the preprocessing bottleneck by 10-20x.
+2. **Dynamic Windows**: 100 days might be too long for some transients. Reducing the window might help identify SNe earlier.
+3. **Additional Features**: Including the $g-r$ color evolution as a separate channel might improve the classification of SNIa vs SNII.

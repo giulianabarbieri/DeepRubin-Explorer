@@ -114,7 +114,24 @@ python src/train.py
 
 Training metrics and the **confusion matrix artifact** will be automatically logged to MLflow. The model weights are saved in `models/rubin_tcn_model.pth`.
 
-### 7. Evaluate the Model
+### 7. Run the Pipeline Benchmark
+Measure the inference latency and throughput to evaluate real-time readiness for the LSST alert stream:
+
+```bash
+# Quick benchmark (50 samples)
+python src/benchmark.py
+
+# Higher precision benchmark (200 samples)
+python src/benchmark.py --n 200
+```
+
+This script reports:
+- **GP Preprocessing latency** (mean + P95 in ms)
+- **TCN Inference latency** per sample
+- **Throughput**: alerts/second on current hardware
+- **Scalability estimate**: hours to process 10M nightly LSST alerts
+
+### 8. Evaluate the Model
 Generate confusion matrix and classification report:
 
 ```bash
