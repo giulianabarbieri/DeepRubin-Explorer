@@ -211,10 +211,6 @@ The dataset contains **764 high-quality light curves** distributed across four a
   <img src="assets/eda_mean_curves.png" width="700">
 </p>
 
-The mean light curve analysis reveals distinct temporal signatures:
-- **Cepheids** show characteristic periodic pulsations with clear g-r band differences
-- **Quasars** exhibit stochastic variability with consistent flux levels
-- **Supernovae** display explosive rise and decay patterns, with Type Ia showing more symmetric profiles
 
 ### Color Evolution Analysis
 
@@ -222,7 +218,6 @@ The mean light curve analysis reveals distinct temporal signatures:
   <img src="assets/eda_color_evolution.png" width="600">
 </p>
 
-The color evolution (g-r) analysis demonstrates how different physical processes affect photometric signatures over time, providing crucial features for machine learning classification.
 
 ### 🏆 The Evolution of the Model: A Success Story
 
