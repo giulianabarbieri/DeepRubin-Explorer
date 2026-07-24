@@ -21,7 +21,7 @@ This project implements a high-performance Machine Learning pipeline to classify
 ## 🧠 ML Engineering Challenges
 Transitioning from industrial ML to Astrophysics requires addressing domain-specific constraints:
 * **Irregular Sampling:** Handling non-equidistant time series (cadence-dependent data).
-* **Heteroscedastic Noise:** Integrating measurement uncertainties ($\sigma$) directly into the loss function.
+* **Heteroscedastic Noise:** Each photometric observation carries its own associated measurement error ($\sigma$), varying from point to point. We address this during preprocessing via Gaussian Process regression (`alpha=y_err**2`), weighting each observation inversely by its variance.
 * **Class Imbalance:** Addressing unequal sample sizes across astronomical transient types (29 SNII vs 91 QSO).
 
 ##  Architecture
